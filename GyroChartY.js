@@ -2,19 +2,18 @@ import React, { useEffect, useState } from "react";
 import { Text, View, Dimensions } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { Gyroscope } from 'expo-sensors';
-import GyroChartY from "./GyroChartY";
 
-const GyroChart = () => {
-  const [gyroXData, setGyroXData] = useState([]);
+const GyroChartY = () => {
+  const [gyroYData, setGyroYData] = useState([]);  // Change variable name
   const [cardData, setCardData] = useState([0]);
   const [counter, setCounter] = useState(0);
 
   useEffect(() => {
     const subscribeToGyroscope = async () => {
-      Gyroscope.setUpdateInterval(1000); // Set the update interval in milliseconds
+      Gyroscope.setUpdateInterval(1000);
 
-      Gyroscope.addListener(({ x }) => {
-        setGyroXData((prevData) => [...prevData, x]);
+      Gyroscope.addListener(({ y }) => {  // Change to y-axis
+        setGyroYData((prevData) => [...prevData, y]);  // Change variable name
       });
     };
 
@@ -26,16 +25,16 @@ const GyroChart = () => {
   }, []);
 
   function changeCardData() {
-    if (counter < gyroXData.length - 1) {
+    if (counter < gyroYData.length - 1) {
       setCounter(counter + 1);
-      const x = gyroXData[counter + 1];
-      if (x === undefined) return;
-      setCardData((prev) => [...prev, x]);
+      const y = gyroYData[counter + 1];  // Change variable name
+      if (y === undefined) return;
+      setCardData((prev) => [...prev, y]);
     } else {
       setCounter(0);
-      const x = gyroXData[0];
-      if (x === undefined) return;
-      setCardData((prev) => [...prev, x]);
+      const y = gyroYData[0];  // Change variable name
+      if (y === undefined) return;
+      setCardData((prev) => [...prev, y]);
     }
     if (cardData.length > 10) {
       setCardData(cardData.slice(10, cardData.length));
@@ -50,10 +49,9 @@ const GyroChart = () => {
   }, [counter]);
 
   return (
-    
     <View style={{ marginLeft: 6, marginBottom: -86 }}>
       <Text style={{ fontWeight: "bold", fontSize: 18, position: "absolute", top: 12 }}>
-        Gyroscope (X-Axis)
+        Gyroscope (Y-Axis)  {/* Change text */}
       </Text>
       <LineChart
         data={{
@@ -75,10 +73,9 @@ const GyroChart = () => {
           backgroundColor: "#1fffff",
           backgroundGradientFrom: "#1c1c1c",
           backgroundGradientTo: "#1c1c1c",
-          decimalPlaces: 2, // Adjust as needed
+          decimalPlaces: 2,
 
           color: (opacity = 1, value) => {
-            // Customize the color based on value
             return value < -2 || value > 2
               ? "rgba(255, 0, 0, " + opacity + ")"
               : "rgba(0, 255, 0, " + opacity + ")";
@@ -97,11 +94,8 @@ const GyroChart = () => {
           borderRadius: 8,
         }}
       />
-      
     </View>
-    
-  
   );
 };
 
-export default GyroChart;
+export default GyroChartY;
