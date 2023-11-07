@@ -1,133 +1,100 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Text, View, Dimensions } from "react-native";
+import { LineChart } from "react-native-chart-kit";
 import { Gyroscope } from 'expo-sensors';
-import Chart from "./Chart";
-import * as Location from 'expo-location';
-import {
-  Chart as ChartJS,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import { Scatter } from 'react-chartjs-2';
 
-
-
-ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend);
-
-
-const App = () => {
-  
-  const [gyroData, setGyroData] = useState({ x: 0, y: 0, z: 0 });
-  const [locationData, setLocationData] = useState({ latitude: 0, longitude: 0 });
+const GyroChart = () => {
+  const [gyroXData, setGyroXData] = useState([]);
+  const [cardData, setCardData] = useState([0]);
+  const [counter, setCounter] = useState(0);
 
   useEffect(() => {
-    // Ask for permission to access the gyroscope and location sensors.
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
-        return;
-      }
-
-      let location = await Location.getCurrentPositionAsync({});
-      setLocationData(location);
-    })();
-  }, []);
-
-  const labels = [];
-  const gyroDataValues = [];
-  const locationDataValues = [];
-
-  useEffect(() => {
-    let gyroSubscription;
-
-    const updateGyroData = (data) => {
-      setGyroData(() => ({
-        x: parseFloat(data.x.toFixed(3)),
-        y: parseFloat(data.y.toFixed(3)),
-        z: parseFloat(data.z.toFixed(3)) * 0.01 > 0.001 ? parseFloat(data.z.toFixed(3)) : 0
-      }));
+    const subscribeToGyroscope = async () => {
+      const { x } = await Gyroscope.addListener((data) => {
+        setGyroXData((prevData) => [...prevData, data.x]);
+      });
     };
 
-    const updateGyroSubscription = () => {
-      gyroSubscription = Gyroscope.addListener(updateGyroData);
-    };
-
-    updateGyroSubscription(); // Initial subscription
-
-    const interval = setInterval(() => {
-      gyroSubscription.remove(); // Remove the current subscription
-      updateGyroSubscription(); // Create a new subscription
-      console.log("im work");
-    }, 5000);
+    subscribeToGyroscope();
 
     return () => {
-      gyroSubscription.remove(); // Clean up the subscription
-      clearInterval(interval);
+      Gyroscope.removeAllListeners();
     };
   }, []);
 
-  labels.push(new Date().toLocaleTimeString());
+  function changeCardData() {
+    if (counter < gyroXData.length - 1) {
+      setCounter(counter + 1);
+      const x = gyroXData[counter + 1];
+      if (x === undefined) return;
+      setCardData((prev) => [...prev, x]);
+    } else {
+      setCounter(0);
+      const x = gyroXData[0];
+      if (x === undefined) return;
+      setCardData((prev) => [...prev, x]);
+    }
+    if (cardData.length > 10) {
+      setCardData(cardData.slice(10, cardData.length));
+    }
+  }
 
-console.log(gyroData);
-
-  const datasets = [
-    {
-      data: gyroDataValues.filter((value) => {
-        let num = value * 0.01;
-        let x = num.toFixed(3);
-        if (x != 0.000) {
-          return true;
-        } else {
-          return false;
-        }
-      }),
-      label: "Gyroscopic change in values",
-      config: {
-        lineWidth: 2,
-        color: "#FF0000",
-      },
-    },
-    {
-      data: locationDataValues,
-      label: "Current location",
-      config: {
-        lineWidth: 2,
-        color: "#0000FF",
-      },
-    },
-  ];
-   const options = {
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
-    },
-  };
-  const i =0;
-
-   const data = {
-    datasets: [
-      {
-        label: 'A dataset',
-        data: Array.from({ length: 100 }, () => ({
-          x: Math.random() * 200 - 100, // Random number between -100 and 100
-          y: Math.random() * 200 - 100, // Random number between -100 and 100
-        })),
-        backgroundColor: 'rgba(255, 99, 132, 1)',
-      },
-    ],
-  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      changeCardData();
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [counter]);
 
   return (
-    <View style={{ flex: 1 }}>
-       <Scatter options={options} data={data} />
-      <Text>Permission to access the gyroscope and location sensors is required.</Text>
+    <View style={{ marginLeft: 6, marginBottom: -86 }}>
+      <Text style={{ fontWeight: "bold", fontSize: 18, position: "absolute", top: 12 }}>
+        Gyroscope (X-Axis)
+      </Text>
+      <LineChart
+        data={{
+          labels: [],
+          datasets: [
+            {
+              data: cardData,
+              strokeWidth: 0.5,
+            },
+          ],
+        }}
+        width={Dimensions.get("window").width - 45}
+        height={150}
+        withInnerLines={false}
+        withOuterLines={false}
+        fromZero={true}
+        useShadowColorFromDataset={true}
+        chartConfig={{
+          backgroundColor: "#1fffff",
+          backgroundGradientFrom: "#1c1c1c",
+          backgroundGradientTo: "#1c1c1c",
+          decimalPlaces: 2, // Adjust as needed
+
+          color: (opacity = 1, value) => {
+            // Customize the color based on value
+            return value < -2 || value > 2
+              ? "rgba(255, 0, 0, " + opacity + ")"
+              : "rgba(0, 255, 0, " + opacity + ")";
+          },
+
+          labelColor: (opacity = 1) => `rgba(255,255,255,${opacity})`,
+          style: {
+            borderRadius: 10,
+          },
+          propsForDots: {
+            r: "3",
+          },
+        }}
+        style={{
+          marginVertical: 90,
+          borderRadius: 8,
+        }}
+      />
     </View>
   );
 };
 
-export default App;
+export default GyroChart;
