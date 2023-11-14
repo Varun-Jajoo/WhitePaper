@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Text, View, Dimensions } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { Gyroscope } from 'expo-sensors';
+import GyroChartY from "./GyroChartY";
 
 const GyroChart = () => {
   const [gyroXData, setGyroXData] = useState([]);
@@ -10,7 +11,7 @@ const GyroChart = () => {
 
   useEffect(() => {
     const subscribeToGyroscope = async () => {
-      Gyroscope.setUpdateInterval(1000); // Set the update interval in milliseconds
+      Gyroscope.setUpdateInterval(1000); 
 
       Gyroscope.addListener(({ x }) => {
         setGyroXData((prevData) => [...prevData, x]);
@@ -73,7 +74,7 @@ const GyroChart = () => {
           backgroundColor: "#1fffff",
           backgroundGradientFrom: "#1c1c1c",
           backgroundGradientTo: "#1c1c1c",
-          decimalPlaces: 2, // Adjust as needed
+          decimalPlaces: 2, // Adjust as 
 
           color: (opacity = 1, value) => {
             // Customize the color based on value
@@ -95,6 +96,7 @@ const GyroChart = () => {
           borderRadius: 8,
         }}
       />
+      <GyroChartY/>
     </View>
   );
 };

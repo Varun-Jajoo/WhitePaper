@@ -4,7 +4,7 @@ import { LineChart } from "react-native-chart-kit";
 import { Gyroscope } from 'expo-sensors';
 
 const GyroChartY = () => {
-  const [gyroYData, setGyroYData] = useState([]);  // Change variable name
+  const [gyroYData, setGyroYData] = useState([]); // Change variable name to gyroYData
   const [cardData, setCardData] = useState([0]);
   const [counter, setCounter] = useState(0);
 
@@ -12,8 +12,8 @@ const GyroChartY = () => {
     const subscribeToGyroscope = async () => {
       Gyroscope.setUpdateInterval(1000);
 
-      Gyroscope.addListener(({ y }) => {  // Change to y-axis
-        setGyroYData((prevData) => [...prevData, y]);  // Change variable name
+      Gyroscope.addListener(({ y }) => { // Change to
+        setGyroYData((prevData) => [...prevData, y]); // Change to y
       });
     };
 
@@ -25,14 +25,14 @@ const GyroChartY = () => {
   }, []);
 
   function changeCardData() {
-    if (counter < gyroYData.length - 1) {
+    if (counter < gyroYData.length - 1) { // Change to gyroYData
       setCounter(counter + 1);
-      const y = gyroYData[counter + 1];  // Change variable name
+      const y = gyroYData[counter + 1]; // Change to y
       if (y === undefined) return;
       setCardData((prev) => [...prev, y]);
     } else {
       setCounter(0);
-      const y = gyroYData[0];  // Change variable name
+      const y = gyroYData[0]; // Change to y
       if (y === undefined) return;
       setCardData((prev) => [...prev, y]);
     }
@@ -51,7 +51,7 @@ const GyroChartY = () => {
   return (
     <View style={{ marginLeft: 6, marginBottom: -86 }}>
       <Text style={{ fontWeight: "bold", fontSize: 18, position: "absolute", top: 12 }}>
-        Gyroscope (Y-Axis)  {/* Change text */}
+        Gyroscope (Y-Axis) {/* Update label */}
       </Text>
       <LineChart
         data={{
