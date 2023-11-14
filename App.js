@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Text, View, Dimensions } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { Gyroscope } from 'expo-sensors';
-import GyroChartY from "./GyroChartY";
 
 const GyroChart = () => {
   const [gyroXData, setGyroXData] = useState([]);
@@ -50,7 +49,6 @@ const GyroChart = () => {
   }, [counter]);
 
   return (
-    
     <View style={{ marginLeft: 6, marginBottom: -86 }}>
       <Text style={{ fontWeight: "bold", fontSize: 18, position: "absolute", top: 12 }}>
         Gyroscope (X-Axis)
@@ -97,10 +95,7 @@ const GyroChart = () => {
           borderRadius: 8,
         }}
       />
-      
     </View>
-    
-  
   );
 };
 
