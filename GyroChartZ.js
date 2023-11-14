@@ -2,20 +2,18 @@ import React, { useEffect, useState } from "react";
 import { Text, View, Dimensions } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { Gyroscope } from 'expo-sensors';
-import GyroChartY from "./GyroChartY";
-import GyroChartZ from "./GyroChartZ";
 
-const GyroChart = () => {
-  const [gyroXData, setGyroXData] = useState([]);
+const GyroChartZ = () => {
+  const [gyroZData, setGyroZData] = useState([]);
   const [cardData, setCardData] = useState([0]);
   const [counter, setCounter] = useState(0);
 
   useEffect(() => {
     const subscribeToGyroscope = async () => {
-      Gyroscope.setUpdateInterval(1000); 
+      Gyroscope.setUpdateInterval(1000);
 
-      Gyroscope.addListener(({ x }) => {
-        setGyroXData((prevData) => [...prevData, x]);
+      Gyroscope.addListener(({ z }) => {
+        setGyroZData((prevData) => [...prevData, z]);
       });
     };
 
@@ -27,16 +25,16 @@ const GyroChart = () => {
   }, []);
 
   function changeCardData() {
-    if (counter < gyroXData.length - 1) {
+    if (counter < gyroZData.length - 1) {
       setCounter(counter + 1);
-      const x = gyroXData[counter + 1];
-      if (x === undefined) return;
-      setCardData((prev) => [...prev, x]);
+      const z = gyroZData[counter + 1];
+      if (z === undefined) return;
+      setCardData((prev) => [...prev, z]);
     } else {
       setCounter(0);
-      const x = gyroXData[0];
-      if (x === undefined) return;
-      setCardData((prev) => [...prev, x]);
+      const z = gyroZData[0]; //CHANGE Z
+      if (z === undefined) return;
+      setCardData((prev) => [...prev, z]);
     }
     if (cardData.length > 10) {
       setCardData(cardData.slice(10, cardData.length));
@@ -51,9 +49,9 @@ const GyroChart = () => {
   }, [counter]);
 
   return (
-    <View style={{ marginLeft: 6, marginBottom: -86 ,paddingTop:24}}>
-      <Text style={{ fontWeight: "bold", fontSize: 18 ,paddingVertical:10,paddingLeft:10}}>
-        Gyroscope (X-Axis)
+    <View style={{ marginLeft: 6, marginTop: -50 }}> 
+      <Text style={{ fontWeight: "bold", fontSize: 18, paddingVertical: 10, paddingLeft: 10 }}>
+        Gyroscope (Z-Axis)
       </Text>
       <LineChart
         data={{
@@ -75,10 +73,9 @@ const GyroChart = () => {
           backgroundColor: "#1fffff",
           backgroundGradientFrom: "#1c1c1c",
           backgroundGradientTo: "#1c1c1c",
-          decimalPlaces: 2, // Adjust a VALUE
+          decimalPlaces: 2,
 
           color: (opacity = 1, value) => {
-            // Customize the color based on valuE
             return value < -2 || value > 2
               ? "rgba(255, 0, 0, " + opacity + ")"
               : "rgba(0, 255, 0, " + opacity + ")";
@@ -93,14 +90,12 @@ const GyroChart = () => {
           },
         }}
         style={{
-          marginBottom: 80,
+          marginBottom: 50,
           borderRadius: 8,
         }}
       />
-      <GyroChartY/>
-      <GyroChartZ/>
     </View>
   );
 };
 
-export default GyroChart;
+export default GyroChartZ;
