@@ -32,7 +32,7 @@ const GyroChartY = () => {
       setCardData((prev) => [...prev, y]);
     } else {
       setCounter(0);
-      const y = gyroYData[0]; // Change to Y
+      const y = gyroYData[0]; // Change to 
       if (y === undefined) return;
       setCardData((prev) => [...prev, y]);
     }
@@ -49,9 +49,9 @@ const GyroChartY = () => {
   }, [counter]);
 
   return (
-    <View style={{ marginLeft: 6, marginTop: -86 }}>
+    <View style={{ marginLeft: 6, marginTop: 0 }}>
       <Text style={{ fontWeight: "bold", fontSize: 18 ,paddingVertical:10,paddingLeft:10}}>
-        Gyroscope (Y-Axis) {/* Update label */}
+        Gyroscope (Y-Axis) {/* Update label*/}
       </Text>
       <LineChart
         data={{
